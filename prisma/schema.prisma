@@ -5,15 +5,15 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id         Int      @id @default(autoincrement())
   name       String
   email      String   @unique
@@ -21,30 +21,31 @@ model user {
   is_admin   Boolean  @default(false)
   created_at DateTime @default(now())
 
-  password_recovery password_recovery?
-  audit_logs        audit_logs[]
+  PasswordRecovery PasswordRecovery[]
+  Log        Log[]
 }
 
-model password_recovery {
+model PasswordRecovery {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  expiresAt DateTime
   userId    Int      @unique
   token     String   @unique
 
-  user user @relation(fields: [userId], references: [id])
+  User User @relation(fields: [userId], references: [id])
 }
 
-model revoked_tokens {
+model RevokedToken {
   id    Int    @id @default(autoincrement())
   token String @unique
 }
 
-model audit_logs {
+model Log {
   id         Int      @id @default(autoincrement())
   user_id    Int
   action     String
   ip         String?
   created_at DateTime @default(now())
 
-  user user @relation(fields: [user_id], references: [id])
+  User User @relation(fields: [user_id], references: [id])
 }

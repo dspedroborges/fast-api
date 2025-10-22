@@ -5,25 +5,6 @@ import { authenticate, AuthenticatedRequest } from "../middleware/authenticate";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
-  try {
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "Name, email or password is missing" });
-    }
-
-    await prisma.user.create({
-      data: { name, email, password, is_admin: false },
-    });
-
-    res.status(201).json({ message: "User created successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error when trying to create user" });
-  }
-});
-
 router.get("/", authenticate, async (req: AuthenticatedRequest, res: Response) => {
   if (!req.isAdmin) return res.status(403);
   const users = await prisma.user.findMany({

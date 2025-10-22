@@ -3,8 +3,21 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-export async function generateToken(data: { userId: string|number, refresh: boolean }, expiresIn?: number) {
-    const token = jwt.sign(data, JWT_SECRET_KEY, { expiresIn: expiresIn ? expiresIn : expiresIn ? expiresIn : 60*60*24 });
+export async function generateToken(
+    data: { userId: string | number; refresh: boolean },
+    expiresIn?: number
+) {
+    let tokenExpiry: number;
+
+    if (expiresIn) {
+        tokenExpiry = expiresIn;
+    } else if (data.refresh) {
+        tokenExpiry = 60 * 60 * 24 * 7; // 7 days for refresh token
+    } else {
+        tokenExpiry = 60 * 60; // 1 hour for access token
+    }
+
+    const token = jwt.sign(data, JWT_SECRET_KEY, { expiresIn: tokenExpiry });
     return token;
 }
 
