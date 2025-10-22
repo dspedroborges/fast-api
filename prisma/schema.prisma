@@ -22,7 +22,6 @@ model User {
   created_at DateTime @default(now())
 
   PasswordRecovery PasswordRecovery[]
-  Log        Log[]
 }
 
 model PasswordRecovery {
@@ -41,11 +40,9 @@ model RevokedToken {
 }
 
 model Log {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  action     String
-  ip         String?
-  created_at DateTime @default(now())
-
-  User User @relation(fields: [user_id], references: [id])
+  id        Int      @id @default(autoincrement())
+  ip        String
+  path      String
+  method    String
+  createdAt DateTime @default(now())
 }
