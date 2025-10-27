@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import authRoutes from "./routes/auth";
 import { log } from "./middleware/log";
+import "./jobs/cleanupRevokedTokens.js";
 
 dotenv.config();
 
