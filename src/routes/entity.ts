@@ -35,18 +35,18 @@ router.get("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
 });
 
 router.post("/:id", authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    const { name, description, price, stock } = req.body;
+    const { name } = req.body;
 
     if (!req.isAdmin) return res.status(403);
 
     await prisma.entities.create({
-        data: { name, description, price, stock },
+        data: { name },
     });
-    res.status(201).json({ message: "entity created" });
+    res.status(201).json({ message: "Entity created" });
 });
 
 router.put("/:id", authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    const { name, description, price, stock } = req.body;
+    const { name } = req.body;
     const entityId = Number(req.params.id);
 
     if (!req.isAdmin) return res.status(403);
@@ -60,12 +60,12 @@ router.put("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
     if (!entity) return;
 
     await prisma.entities.update({
-        data: { name, description, price, stock },
+        data: { name },
         where: {
             id: entityId
         }
     });
-    res.status(201).json({ message: "entity updated" });
+    res.status(201).json({ message: "Entity updated" });
 });
 
 router.delete("/:id", async (req: AuthenticatedRequest, res: Response) => {
@@ -78,7 +78,7 @@ router.delete("/:id", async (req: AuthenticatedRequest, res: Response) => {
             id: entityId
         }
     });
-    res.status(201).json({ message: "entity deleted" });
+    res.status(201).json({ message: "Entity deleted" });
 });
 
 export default router;
