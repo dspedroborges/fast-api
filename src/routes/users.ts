@@ -7,7 +7,7 @@ const router = Router();
 
 router.get("/", authenticate, async (req: AuthenticatedRequest, res: Response) => {
   if (!req.isAdmin) return res.status(403);
-  const users = await prisma.user.findMany({
+  const users = await prisma.users.findMany({
     select: {
       name: true,
       email: true,
@@ -22,7 +22,7 @@ router.get("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
 
   if (userId !== req.authenticatedUserId && !req.isAdmin) return res.status(403);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       id: userId
     }
@@ -36,7 +36,7 @@ router.put("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
 
   if (userId !== req.authenticatedUserId && !req.isAdmin) return res.status(403);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       id: userId
     }
@@ -44,7 +44,7 @@ router.put("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
 
   if (!user) return;
 
-  const emailAlreadyExists = await prisma.user.findFirst({
+  const emailAlreadyExists = await prisma.users.findFirst({
     where: {
       email,
       id: {
@@ -61,7 +61,7 @@ router.put("/:id", authenticate, async (req: AuthenticatedRequest, res: Response
     if (!match) res.status(403).json({ message: "Current password is incorrect" });
   }
 
-  await prisma.user.update({
+  await prisma.users.update({
     data: {
       name,
       email,
@@ -79,7 +79,7 @@ router.delete("/:id", async (req: AuthenticatedRequest, res: Response) => {
 
   if (userId !== req.authenticatedUserId && !req.isAdmin) return res.status(403);
 
-  await prisma.user.delete({
+  await prisma.users.delete({
     where: {
       id: userId
     }

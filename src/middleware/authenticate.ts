@@ -17,7 +17,7 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
   
   if (!decoded.valid) return res.sendStatus(401);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       id: decoded.data.userId
     }

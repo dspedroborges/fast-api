@@ -6,7 +6,7 @@ cron.schedule("0 0 * * 0", async () => {
   console.log("[CRON] Cleaning revoked tokens...");
 
   try {
-    const deleted = await prisma.revokedToken.deleteMany({});
+    const deleted = await prisma.revokedTokens.deleteMany({});
     console.log(`[CRON] Deleted ${deleted.count} revoked tokens`);
   } catch (err) {
     console.error("[CRON] Error during cleanup:", err);
