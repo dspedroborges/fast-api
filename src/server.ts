@@ -1,26 +1,33 @@
-import express from "express";
+import express, { type Response } from "express";
 import dotenv from "dotenv";
-import usersRoutes from "./routes/users";
-import authRoutes from "./routes/auth";
-import { log } from "./middleware/log";
-import "./jobs/cleanupRevokedTokens.ts";
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(log);
+app.use(express.json({ limit: "1mb" }));
+app.use(cookieParser());
+app.use(
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: "Too many requests, please try again later."
+    })
+);
 
-app.use("/api/users", usersRoutes);
-app.use("/api/auth", authRoutes);
-
-app.get("/", (req, res) => {
-  res.send("API running!");
+app.get("/", (req, res: Response) => {
+    return res.status(200).send("Alright!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log("Server running on PORT", PORT);
+    });
+}
+
+export default app;
