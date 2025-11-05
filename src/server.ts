@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import "./jobs/cleanupRevokedTokens.js";
+import { xssSanitizerMiddleware } from "./middleware/xss.js";
 
 dotenv.config();
 
@@ -26,7 +27,8 @@ app.use(
         message: "Too many requests, please try again later."
     })
 );
-app.set("trust proxy", true)
+app.set("trust proxy", true);
+app.use(xssSanitizerMiddleware);
 
 app.get("/", (req, res: Response) => {
     return res.status(200).send("Alright!");
