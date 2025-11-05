@@ -1,15 +1,55 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  username  String   @unique
+  password  String
+
+  permissions      Permissions[]
+  passwordRecovery PasswordRecoveries[]
+  logs             Logs[]
+}
+
+model Permissions {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  method    String
+  route     String
+
+  user Users @relation(fields: [userId], references: [id])
+}
+
+model PasswordRecoveries {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    Int      @unique
+  token     String   @unique
+
+  user Users @relation(fields: [userId], references: [id])
+}
+
+model RevokedTokens {
+  id    Int    @id @default(autoincrement())
+  token String @unique
+}
+
+model Logs {
+  id        Int      @id @default(autoincrement())
+  ip        String
+  userId    Int
+  path      String
+  method    String
+  createdAt DateTime @default(now())
+
+  user Users @relation(fields: [userId], references: [id])
 }
