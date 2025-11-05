@@ -13,19 +13,26 @@ model Users {
   username  String   @unique
   password  String
 
-  permissions      Permissions[]
   passwordRecovery PasswordRecoveries[]
   logs             Logs[]
+  role            Roles?
+}
+
+model Roles {
+  id          Int           @id @default(autoincrement())
+  userId      Int           @unique
+  user        Users         @relation(fields: [userId], references: [id])
+  permissions Permissions[]
 }
 
 model Permissions {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  userId    Int
+  roleId    Int
   method    String
   route     String
 
-  user Users @relation(fields: [userId], references: [id])
+  role Roles @relation(fields: [roleId], references: [id])
 }
 
 model PasswordRecoveries {

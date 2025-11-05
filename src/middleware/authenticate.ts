@@ -18,13 +18,17 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
 
   const user = await prisma.users.findUnique({
     where: { id: Number(decoded.data.userId) },
+    include: {
+      role: true,
+    }
   });
 
   if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user.role) return res.status(404).json({ message: "Not a valid role" });
 
   const hasPermission = await prisma.permissions.findFirst({
     where: {
-      userId: user.id,
+      roleId: user.role?.id,
       method: req.method,
       route: req.route,
     }
