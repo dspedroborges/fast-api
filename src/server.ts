@@ -1,5 +1,6 @@
 import express, { type Response } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import "./jobs/cleanupRevokedTokens.js";
@@ -7,6 +8,12 @@ import "./jobs/cleanupRevokedTokens.js";
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+}));
 
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());

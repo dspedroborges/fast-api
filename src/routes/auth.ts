@@ -3,8 +3,15 @@ import { prisma } from "../utils/prisma.js";
 import { checkEncryptedPassword, encryptPassword, generateToken, verifyToken } from "../utils/auth.js";
 import { v4 as uuidv4 } from "uuid";
 import { authenticate, type AuthenticatedRequest } from "../middleware/authenticate.js";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min
+    max: 5,
+    message: "Too many attempts, please try again later",
+});
 
 router.get("/verify-token", authenticate, async (req: AuthenticatedRequest, res) => {
     return res.sendStatus(201);
@@ -59,7 +66,7 @@ router.post("/sign-up", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/sign-in", async (req: Request, res: Response) => {
+router.post("/sign-in", limiter, async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
 
@@ -104,7 +111,7 @@ router.post("/sign-in", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/refresh-token", async (req: Request, res: Response) => {
+router.post("/refresh-token", limiter, async (req: Request, res: Response) => {
     try {
         const refreshToken = req.cookies?.refreshToken;
 
@@ -153,7 +160,7 @@ router.post("/refresh-token", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/password-recovery", async (req: Request, res: Response) => {
+router.post("/password-recovery", limiter, async (req: Request, res: Response) => {
     try {
         const { username } = req.body;
 
