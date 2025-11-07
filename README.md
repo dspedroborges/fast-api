@@ -33,22 +33,7 @@ npm install bcryptjs dotenv jsonwebtoken node-cron uuid express cors multer pris
 npm install -D typescript tsx @types/node @types/express @types/bcryptjs @types/jsonwebtoken @types/cors @types/multer @types/uuid
 ```
 
-## Necessary config for package.json
-
-```json
-"scripts": {
-  "dev": "tsx watch src/server.ts",
-  "build": "tsc",
-  "start": "node dist/server.js"
-}
-```
-
-```json
-"main": "src/server.ts",
-"type": "module",
-```
-
-## Starts
+## Inits
 
 ```shell
 npx tsc --init
@@ -56,6 +41,22 @@ npx tsc --init
 
 ```shell
 npx prisma init
+```
+
+## Necessary config for package.json
+
+```json
+"scripts": {
+  "postinstall": "prisma generate",
+  "dev": "tsx watch src/server.ts",
+  "build": "tsc && npx prisma generate",
+  "start": "node dist/server.js"
+},
+```
+
+```json
+"main": "src/server.ts",
+"type": "module",
 ```
 
 ## Necessary config for tsconfig.json
@@ -94,6 +95,15 @@ import rateLimit from "express-rate-limit";
 dotenv.config();
 
 const app = express();
+
+// CORS setup
+const corsOptions = {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: false
+};
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
