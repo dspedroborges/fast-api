@@ -20,7 +20,10 @@ function sanitizeObject(obj: AnyObject): AnyObject {
 
 export function xssSanitizerMiddleware(req: Request, res: Response, next: NextFunction) {
     if (req.body) req.body = sanitizeObject(req.body);
-    if (req.query) req.query = sanitizeObject(req.query as AnyObject);
     if (req.params) req.params = sanitizeObject(req.params);
+
+    // Create a mutable, sanitized copy of query
+    (req as any).sanitizedQuery = req.query ? sanitizeObject(req.query as AnyObject) : {};
+
     next();
 }

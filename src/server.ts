@@ -30,6 +30,8 @@ app.use(
         message: "Too many requests, please try again later."
     })
 );
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
 app.use(xssSanitizerMiddleware);
 

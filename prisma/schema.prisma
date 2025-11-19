@@ -15,12 +15,13 @@ model Users {
 
   passwordRecovery PasswordRecoveries[]
   logs             Logs[]
-  role            Roles?
+  role             Roles?
 }
 
 model Roles {
   id          Int           @id @default(autoincrement())
   userId      Int           @unique
+  name        String        @unique
   user        Users         @relation(fields: [userId], references: [id])
   permissions Permissions[]
 }
